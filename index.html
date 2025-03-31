@@ -3,58 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Night Ride Wallpaper</title>
+    <title>HTML-Dateien auflisten</title>
     <style>
         body {
-            margin: 0;
-            overflow: hidden;
-            background: url('https://example.com/night-city.jpg') no-repeat center center fixed;
-            background-size: cover;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
         }
-        .car {
-            width: 50px;
-            height: 100px;
-            background: url('https://example.com/car.png') no-repeat center center;
-            background-size: contain;
-            position: absolute;
-            transition: transform 0.1s;
+        ul {
+            list-style-type: none;
+            padding: 0;
         }
-        .light {
-            width: 10px;
-            height: 10px;
-            background-color: rgba(255, 255, 0, 0.8);
-            border-radius: 50%;
-            position: absolute;
-            animation: move 3s infinite;
+        li {
+            margin: 10px 0;
         }
-        @keyframes move {
-            0% { transform: translate(0, 0); }
-            50% { transform: translate(300px, 300px); }
-            100% { transform: translate(0, 0); }
+        a {
+            text-decoration: none;
+            color: #007bff;
+            font-size: 18px;
+        }
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div class="car" id="car"></div>
-    <div class="light"></div>
-    <div class="light"></div>
-    <div class="light"></div>
+    <h2>Verfügbare HTML-Dateien</h2>
+    <ul id="file-list"></ul>
+    
     <script>
-        const car = document.getElementById('car');
-        document.addEventListener('mousemove', (event) => {
-            car.style.left = `${event.clientX - 25}px`;
-            car.style.top = `${event.clientY - 50}px`;
-        });
-
-        document.querySelectorAll('.light').forEach(light => {
-            light.addEventListener('click', () => {
-                light.style.backgroundColor = 'rgba(0, 0, 255, 0.8)';
-            });
-        });
+        fetch("/")
+            .then(response => response.text())
+            .then(text => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, "text/html");
+                const links = doc.querySelectorAll("a");
+                const fileList = document.getElementById("file-list");
+                
+                links.forEach(link => {
+                    const href = link.getAttribute("href");
+                    if (href.endsWith(".html") && href !== "index.html") {
+                        const li = document.createElement("li");
+                        const a = document.createElement("a");
+                        a.href = href;
+                        a.textContent = href;
+                        li.appendChild(a);
+                        fileList.appendChild(li);
+                    }
+                });
+            })
+            .catch(error => console.error("Fehler beim Abrufen der Dateien:", error));
     </script>
 </body>
 </html>
